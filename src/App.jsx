@@ -1,122 +1,121 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useCallback, useState } from 'react';
+import { CalibrationModal } from './components/CalibrationModal';
+import { CameraFeed } from './components/CameraFeed';
+import { GameCanvas } from './components/GameCanvas';
+import { ResultOverlay } from './components/ResultOverlay';
+import { VolumeMeter } from './components/VolumeMeter';
+import { useMediaStream } from './hooks/useMediaStream';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Estados posibles: 'CALIBRATING' | 'PLAYING' | 'GAMEOVER' | 'VICTORY'
+export function App() {
+  const {
+    stream,
+    volume,
+    peakVolume,
+    sensitivity,
+    setSensitivity,
+    isActive,
+    isLoading,
+    error,
+    startMedia,
+    resetPeak,
+  } = useMediaStream(15);
+
+  const [gameState, setGameState] = useState('CALIBRATING');
+  const [runId, setRunId] = useState(0);
+  const [progressPercent, setProgressPercent] = useState(0);
+  const [requiredVolume, setRequiredVolume] = useState(30);
+  const [failReason, setFailReason] = useState('');
+
+  const handleStartGame = useCallback(() => {
+    resetPeak();
+    setFailReason('');
+    setProgressPercent(0);
+    setRunId((prev) => prev + 1);
+    setGameState('PLAYING');
+  }, [resetPeak]);
+
+  const handleProgressChange = useCallback((percent, nextRequiredVolume) => {
+    setProgressPercent(percent);
+    if (typeof nextRequiredVolume === 'number') {
+      setRequiredVolume(nextRequiredVolume);
+    }
+  }, []);
+
+  const handleGameEnd = useCallback(
+    ({ outcome, progressPercent: finalPercent, failReason: reason }) => {
+      if (typeof finalPercent === 'number') {
+        setProgressPercent(finalPercent);
+      }
+      setFailReason(reason || '');
+      setGameState(outcome);
+    },
+    []
+  );
+
+  const handleRetry = useCallback(() => {
+    resetPeak();
+    setFailReason('');
+    setProgressPercent(0);
+    setRunId((prev) => prev + 1);
+    setGameState('PLAYING');
+  }, [resetPeak]);
+
+  const handleRecalibrate = useCallback(() => {
+    setGameState('CALIBRATING');
+  }, []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <main className="app-shell">
+      <section className="filter-stage" aria-label="Escenario tipo filtro en vivo">
+        <div className="filter-stage__camera">
+          <CameraFeed stream={stream} volume={volume} />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+
+        <div className="filter-stage__canvas-layer">
+          <GameCanvas
+            isPlaying={gameState === 'PLAYING'}
+            volume={volume}
+            runId={runId}
+            onProgressChange={handleProgressChange}
+            onGameEnd={handleGameEnd}
+          />
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+
+        {gameState === 'PLAYING' && (
+          <div className="filter-stage__meter">
+            <VolumeMeter volume={volume} requiredVolume={requiredVolume} />
+          </div>
+        )}
       </section>
 
-      <div className="ticks"></div>
+      {gameState === 'CALIBRATING' && (
+        <CalibrationModal
+          isActive={isActive}
+          isLoading={isLoading}
+          error={error}
+          volume={volume}
+          sensitivity={sensitivity}
+          onSensitivityChange={setSensitivity}
+          onActivateMedia={startMedia}
+          onStartGame={handleStartGame}
+        />
+      )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {(gameState === 'GAMEOVER' || gameState === 'VICTORY') && (
+        <ResultOverlay
+          outcome={gameState}
+          progressPercent={progressPercent}
+          peakVolume={peakVolume}
+          failReason={failReason}
+          attemptCount={runId}
+          onRetry={handleRetry}
+          onRecalibrate={handleRecalibrate}
+        />
+      )}
+    </main>
+  );
 }
 
-export default App
+export default App;

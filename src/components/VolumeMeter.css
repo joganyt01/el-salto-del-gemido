@@ -1,0 +1,100 @@
+.volume-meter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  user-select: none;
+  z-index: 10;
+}
+
+.volume-meter__value {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.82);
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  min-width: 3rem;
+  text-align: center;
+}
+
+.volume-meter__track {
+  position: relative;
+  width: 24px;
+  height: 190px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.volume-meter__fill {
+  width: 100%;
+  border-radius: 999px;
+  transition: height 60ms linear, background-color 120ms ease;
+}
+
+.volume-meter__fill--calm {
+  background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+}
+
+.volume-meter__fill--warm {
+  background: linear-gradient(180deg, #facc15 0%, #eab308 100%);
+}
+
+.volume-meter__fill--loud {
+  background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
+}
+
+.volume-meter__fill--extreme {
+  background: linear-gradient(180deg, #ff2a6d 0%, #dc2626 100%);
+  box-shadow: 0 0 14px rgba(255, 42, 109, 0.9);
+}
+
+.volume-meter__mega-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 95%;
+  height: 2px;
+  background: #ff2a6d;
+  box-shadow: 0 0 6px #ff2a6d;
+  pointer-events: none;
+}
+
+.volume-meter__target-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+
+.volume-meter__label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+  max-width: 96px;
+  line-height: 1.15;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.78);
+  padding: 0.25rem 0.4rem;
+  border-radius: 0.45rem;
+}
+
+@media (max-width: 640px) {
+  .volume-meter__track {
+    width: 20px;
+    height: 145px;
+  }
+
+  .volume-meter__label {
+    font-size: 0.65rem;
+    max-width: 82px;
+  }
+}
