@@ -20,7 +20,7 @@ export function App() {
     error,
     startMedia,
     resetPeak,
-  } = useMediaStream(15);
+  } = useMediaStream(10);
 
   const [gameState, setGameState] = useState('CALIBRATING');
   const [runId, setRunId] = useState(0);
