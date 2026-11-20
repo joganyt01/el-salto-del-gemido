@@ -161,7 +161,7 @@ export function GameCanvas({
           const strength = currentVol / 100;
 
           if (player.onGround && currentVol >= 22) {
-            const isMegaBoost = currentVol >= 95 && seg.zone === 4;
+            const isMegaBoost = currentVol >= 82 && seg.zone === 4;
             player.vy = isMegaBoost ? 780 : 250 + strength * 470;
             player.onGround = false;
 

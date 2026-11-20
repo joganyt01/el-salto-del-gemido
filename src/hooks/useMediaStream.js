@@ -106,7 +106,7 @@ export function useMediaStream(initialSensitivity = 15) {
 
         const rms = Math.sqrt(sumSquares / bufferLength);
         // Escala práctica para voz normal a grito/gemido intenso (0 - 100)
-        const rawLevel = Math.min(100, Math.round(rms * 280));
+        const rawLevel = Math.min(100, Math.round(rms * 340));
         const threshold = sensitivityRef.current;
 
         const filteredLevel =
