@@ -65,7 +65,7 @@ export function generateLevelObstacles() {
       type: 'megaWall',
       x: FINISH_LINE_X - 240,
       width: 76,
-      height: 185,
+      height: 165,
       requiredVolume: 95,
       signText: 'SOLO SE PASA A PURO PULMÓN (95% VOLUMEN)',
       zone: 4,
