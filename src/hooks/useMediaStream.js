@@ -152,7 +152,7 @@ export function useMediaStream(initialSensitivity = 15) {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user' },
         audio: {
-          echoCancellation: true,
+          echoCancellation: false,
           noiseSuppression: true,
         },
       });
